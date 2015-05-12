@@ -119,6 +119,7 @@ def gridp_box_allow(g, box, cell, digit):
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] | (1<<digit)
 
 def gridp_box_disallow(g, box, cell, digit):
+	print "Disallowing " + str(digit) + " in " + str(box) + " " + str(cell)
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] & ~(1<<digit)
 
 def gridp_box_is_allowed(g, box, cell, digit):
@@ -164,9 +165,9 @@ def grid_set(g, gp, x, y, digit):
 		gridp_disallow(gp, x, k, digit)
 		gridp_disallow(gp, k, y, digit)
 
-		box = get_box(x, y)
-		for i in range(0, 9):
-			gridp_box_disallow(gp, box, i, digit)
+	box = get_box(x, y)
+	for i in range(0, 9):
+		gridp_box_disallow(gp, box, i, digit)
 
 """
 In broad strokes:
@@ -181,6 +182,34 @@ In a loop:
 6. Inspect the memoized data and generate puzzles for four difficulty levels
 """
 
+for k in range(1, 10):
+	for box in range(0, 9):
+		print "Box:  " + str(box)
+
+		# Find the cells in this box that are free for this number
+		free_cells = []
+		for cell in range(0, 9):
+			if gridp_box_is_allowed(grid_possibilities, box, cell, k):
+				if b(grid, box, cell) == 0:
+					free_cells.append(cell)
+
+		print "Available: "
+		print free_cells
+
+		new = random.randint(0, len(free_cells)-1)
+
+		print "Chosen: " + str(free_cells[new])
+
+		index = get_box_cell_coord(box, free_cells[new])
+		x = index%9
+		y = index/9
+
+		grid_set(grid, grid_possibilities, x, y, k)
+
+		grid_print(grid)
+		grid_print_num_allowed(grid_possibilities)
+
+"""
 for k in range(0, 9*9+1):
 	x = k%9
 	y = k/9
@@ -197,6 +226,7 @@ for k in range(0, 9*9+1):
 	print ""
 
 	grid_set(grid, grid_possibilities, x, y, new)
+"""
 
 grid_print(grid)
 grid_print_num_allowed(grid_possibilities)
