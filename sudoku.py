@@ -8,27 +8,27 @@ import random
 # 1 to 9 are the numbers.
 # Indexing starts on the upper left.
 grid = array.array('b',
-	[0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0])
+	[1,2,3,7,8,9,4,5,6,
+	 4,5,6,1,2,3,7,8,9,
+	 7,8,9,4,5,6,1,2,3,
+	 9,1,2,6,7,8,3,4,5,
+	 3,4,5,9,1,2,6,7,8,
+	 6,7,8,3,4,5,9,1,2,
+	 8,9,1,5,6,7,2,3,4,
+	 2,3,4,8,9,1,5,6,7,
+	 5,6,7,2,3,4,8,9,1])
 
 # Empty grid, start with anything possible.
 grid_possibilities = array.array('h',
-	[32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767,
-	32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767])
+	[0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 # Return the value of a cell
 def c(grid, x, y):
@@ -182,6 +182,44 @@ In a loop:
 6. Inspect the memoized data and generate puzzles for four difficulty levels
 """
 
+def row_swap(grid, k1, k2):
+	for k in range(0, 9):
+		grid[k1*9 + k], grid[k2*9 + k] = grid[k2*9 + k], grid[k1*9 + k]
+
+def col_swap(grid, k1, k2):
+	for k in range(0, 9):
+		grid[k1 + k*9], grid[k2 + k*9] = grid[k2 + k*9], grid[k1 + k*9]
+
+# First make 50 random row and column swaps to randomize the permutations
+for k in range(0, 50):
+	box = random.randint(0, 2)
+	row1 = random.randint(0, 2)
+	row2 = (row1+random.randint(1, 2))%3 + box*3
+	row1 += box*3
+	row_swap(grid, row1, row2)
+
+	box = random.randint(0, 2)
+	col1 = random.randint(0, 2)
+	col2 = (col1+random.randint(1, 2))%3 + box*3
+	col1 += box*3
+	col_swap(grid, col1, col2)
+
+digits = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+randomized = []
+
+# Now create a random permutation for the digits and apply it
+while len(digits):
+	index = random.randint(0, len(digits)-1)
+	digit = digits.pop(index)
+	randomized.append(digit)
+
+for k in range(0, 9*9):
+	grid[k] = randomized[grid[k]-1]
+	grid_possibilities[k] = 1<<grid[k]
+
+# The next two strategies for generating grids don't work, they eventually hit
+# invalid grid positions.
+"""
 for k in range(1, 10):
 	for box in range(0, 9):
 		print "Box:  " + str(box)
@@ -208,6 +246,7 @@ for k in range(1, 10):
 
 		grid_print(grid)
 		grid_print_num_allowed(grid_possibilities)
+"""
 
 """
 for k in range(0, 9*9+1):
