@@ -30,19 +30,23 @@ grid_possibilities = array.array('h',
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-# Return the value of a cell
+# ============================== GRID PROCEDURES =================================
+
+# Return the value of a cell in the grid
 def c(grid, x, y):
 	return grid[9*y + x]
 
-# Set the value of a cell
+# Set the value of a cell in the grid
 def s(grid, x, y, v):
 	grid[9*y + x] = v
 
-# Get the index of a box. Indexes start at the top left and go right, just like for cells.
+# Get the index of a box.
+# Indexes start at the top left and go right, just like for cells.
 def get_box(x, y):
 	return (x/3)%3 + 3*((y/3)%3)
 
-# Get the index of a cell within a box. The top left cell in a box is 0, then 1, then 2,
+# Get the index of a cell within a box.
+# The top left cell in a box is 0, then 1, then 2,
 # Then the middle left cell is 3, etc etc.
 def get_box_cell(x, y):
 	return x%3 + 3*(y%3)
@@ -51,6 +55,7 @@ def get_box_cell(x, y):
 def get_box_cell_coord(box, cell):
 	return 27*(box/3) + 3*(box%3) + 9*(cell/3) + cell%3
 
+# Get a cell given the index of a box and cell.
 # The arguments for this are the return values of get_box and get_box_cell
 def b(grid, box, cell):
 	return grid[get_box_cell_coord(box, cell)]
@@ -92,15 +97,20 @@ def grid_print(g):
 		 "|" + pretty_print(c(g, 3, 8)) + " " + pretty_print(c(g, 4, 8)) + " " + pretty_print(c(g, 5, 8)) + \
 		 "|" + pretty_print(c(g, 6, 8)) + " " + pretty_print(c(g, 7, 8)) + " " + pretty_print(c(g, 8, 8))
 
+# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
 def gridp_allow(g, x, y, digit):
 	g[9*y + x] = g[9*y + x] | (1<<digit)
 
+# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
 def gridp_disallow(g, x, y, digit):
 	g[9*y + x] = g[9*y + x] & ~(1<<digit)
 
+# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
 def gridp_is_allowed(g, x, y, digit):
 	return g[9*y + x] & (1<<digit)
 
+# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# Returns the number of possibilities allowed for this cell.
 def gridp_num_allowed(g, x, y):
 	allowed = 0
 	for k in range(1, 10):
@@ -108,6 +118,8 @@ def gridp_num_allowed(g, x, y):
 			allowed += 1
 	return allowed
 
+# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# Returns a list of every number allowed in this cell.
 def gridp_get_allowed(g, x, y):
 	allowed = []
 	for k in range(1, 10):
@@ -115,17 +127,23 @@ def gridp_get_allowed(g, x, y):
 			allowed.append(k)
 	return allowed
 
+# g should be a grid_possibilities array.
+# box and cell are indexes from get_box and get_box_cell
 def gridp_box_allow(g, box, cell, digit):
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] | (1<<digit)
 
+# g should be a grid_possibilities array.
+# box and cell are indexes from get_box and get_box_cell
 def gridp_box_disallow(g, box, cell, digit):
 	print "Disallowing " + str(digit) + " in " + str(box) + " " + str(cell)
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] & ~(1<<digit)
 
+# g should be a grid_possibilities array.
+# box and cell are indexes from get_box and get_box_cell
 def gridp_box_is_allowed(g, box, cell, digit):
 	return g[get_box_cell_coord(box, cell)] & (1<<digit)
 
-# There are too possibilities per square to print them all. Instead use this procedure to print a grid of the number of possibilities.
+# There are too many possibilities per square to print them all. Instead use this procedure to print a grid of the number of possibilities.
 def grid_print_num_allowed(g):
 	print chr(gridp_num_allowed(g, 0, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 0) + ord('0')) + \
 		 "|" + chr(gridp_num_allowed(g, 3, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 0) + ord('0')) + \
