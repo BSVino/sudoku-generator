@@ -287,3 +287,45 @@ for k in range(0, 9*9+1):
 
 grid_print(grid)
 grid_print_num_allowed(grid_possibilities)
+
+
+""" Sako's notes from Sunday
+We will have some function in the creation such that it will contain a loop
+while (set_g)
+
+>>>>
+int max_val = 0
+bool Set_g(grid g, int stopping value)
+grid m = Take out random number(g);
+int w = coord of number we just took out
+int curr_val = 0
+if (mv > stopping value)
+    return false;
+if (solve(m, &curr_val))
+    if (curr_val>max_val)
+        g=m;
+        append.takenout(w) where takenout is an array we have of coords of points we have taken out from grid
+        max_val = curr_val
+        return true;
+
+
+bool Solve(grid g)
+{
+	for coord in takenout array
+	run the pips and other techniques we haven't yet decided
+}
+
+def pips(grid g, int x, int y)
+    Check the box, disallow what can't be
+    Check the col, disallow
+    Check the row, disallow
+    If conclusive(we have a function that check if only one # allowed)
+        Set #, +1 difficulty
+    else
+        use 2nd technique
+
+def allow_all(grid g, int x, int y)
+    for k in range(0, 9*9):
+    	grid[k] = ~0
+    	
+""""
