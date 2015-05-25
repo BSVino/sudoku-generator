@@ -383,8 +383,8 @@ grid = array.array('b',
 
 grid_possibilities = get_possibilities(grid)
 
-grid_print(grid)
-grid_print_num_allowed(grid, grid_possibilities)
+#grid_print(grid)
+#grid_print_num_allowed(grid, grid_possibilities)
 
 # If in a certain box the only candidate cells are all in a line then
 # we can eliminate that number in that row in other boxes.
@@ -429,18 +429,40 @@ def candidate_lines(grid, grid_p):
 
 					gridp_disallow(grid_p, column, row, digit)
 
-candidate_lines(grid, grid_possibilities)
+#candidate_lines(grid, grid_possibilities)
+
+#grid_print(grid)
+#grid_print_num_allowed(grid, grid_possibilities)
+
+
+
+def Pips(g, gp):
+	#gp = get_possibilities(g)
+	canPips=True
+	while(canPips):
+		canPips=False
+		for cell in range(0,81):
+			if c(g, cell%9, cell/9) == 0:
+				#print("dude")
+				n=gridp_get_allowed(gp,cell%9,cell/9)
+				#print cell
+				#print n
+				if len(n) == 1:
+					grid_print(grid)
+					#print cell
+					#print n
+					canPips=True
+					grid_set(g,gp,cell%9,cell/9,n[0])
+					print '\n'
+					continue
+
 
 grid_print(grid)
 grid_print_num_allowed(grid, grid_possibilities)
 
-
-
-
-
-
-
-
+Pips(grid, grid_possibilities)
+grid_print(grid)
+grid_print_num_allowed(grid, grid_possibilities)
 
 
 
