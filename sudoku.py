@@ -429,8 +429,19 @@ def candidate_lines(grid, grid_p):
 
 					gridp_disallow(grid_p, column, row, digit)
 
-#candidate_lines(grid, grid_possibilities)
+candidate_lines(grid, grid_possibilities)
 
+grid_print(grid)
+grid_print_num_allowed(grid, grid_possibilities)
+
+
+
+""""robb_alive = True
+while robb_alive:
+	print "KING OF THE NORTH!"
+	frey_betrayal = (random.randint(0,100) == 50)
+	robb_alive = not frey_betrayal
+"""
 #grid_print(grid)
 #grid_print_num_allowed(grid, grid_possibilities)
 
