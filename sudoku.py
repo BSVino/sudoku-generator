@@ -149,6 +149,21 @@ def gridp_print_num_allowed_or_space(g, gp, x, y):
 
 	return " "
 
+# g should be a grid_possibilities array.
+# Returns a list of every cell that this number is allowed in.
+def gridp_get_allowed_cells_in_box_for_digit(g, gp, box, digit):
+	allowed = []
+	for cell in xrange(0, 9):
+		coord = get_box_cell_coord(box, cell);
+
+		if b(g, box, cell) > 0:
+			continue
+
+		if gridp_is_allowed(gp, coord%9, coord/9, digit):
+			allowed.append(cell)
+
+	return allowed
+
 # There are too many possibilities per square to print them all. Instead use this procedure to print a grid of the number of possibilities.
 def grid_print_num_allowed(g, gp):
 	print gridp_print_num_allowed_or_space(g, gp, 0, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 0) + \
@@ -371,48 +386,53 @@ grid_possibilities = get_possibilities(grid)
 grid_print(grid)
 grid_print_num_allowed(grid, grid_possibilities)
 
-# g should be a grid_possibilities array.
-# Returns a list of every cell that this number is allowed in.
-def gridp_get_allowed_cells_in_box_for_digit(g, gp, box, digit):
-	allowed = []
-	for cell in xrange(0, 9):
-		coord = get_box_cell_coord(box, cell);
-
-		if b(g, box, cell) > 0:
-			continue
-
-		if gridp_is_allowed(gp, coord%9, coord/9, digit):
-			allowed.append(cell)
-
-	return allowed
-
+# If in a certain box the only candidate cells are all in a line then
+# we can eliminate that number in that row in other boxes.
 def candidate_lines(grid, grid_p):
 	for box in xrange(0, 9):
 		for digit in xrange(1, 10):
 			allowed = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
-			#print "Digit: " + str(digit) + " (" + str(box) + ")"
 			if not len(allowed):
 				continue
 
 			x_mod = allowed[0]%3
 			y_mod = allowed[0]/3
 
-			#print str(x_mod) + " " + str(y_mod)
 			only_x = True
 			only_y = True
-			for k in xrange(1, len(allowed)-1):
-				#print str(allowed[k]%3) + " " + str(allowed[k]/3)
+			for k in xrange(1, len(allowed)):
 				if allowed[k]%3 != x_mod:
 					only_x = False
 				if allowed[k]/3 != y_mod:
 					only_y = False
 
-			#print allowed
-			#print str(only_x) + " " + str(only_y)
+			assert not (only_x and only_y)
 
+			if not only_x and not only_y:
+				continue
+
+			if only_x:
+				column = get_box_cell_coord(box, allowed[0])%9
+
+				for row in xrange(0, 9):
+					if get_box(column, row) == box:
+						continue
+
+					gridp_disallow(grid_p, column, row, digit)
+
+			if only_y:
+				row = get_box_cell_coord(box, allowed[0])/9
+
+				for column in xrange(0, 9):
+					if get_box(column, row) == box:
+						continue
+
+					gridp_disallow(grid_p, column, row, digit)
 
 candidate_lines(grid, grid_possibilities)
 
+grid_print(grid)
+grid_print_num_allowed(grid, grid_possibilities)
 
 
 
