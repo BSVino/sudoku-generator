@@ -135,7 +135,6 @@ def gridp_box_allow(g, box, cell, digit):
 # g should be a grid_possibilities array.
 # box and cell are indexes from get_box and get_box_cell
 def gridp_box_disallow(g, box, cell, digit):
-	print "Disallowing " + str(digit) + " in " + str(box) + " " + str(cell)
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] & ~(1<<digit)
 
 # g should be a grid_possibilities array.
@@ -143,37 +142,44 @@ def gridp_box_disallow(g, box, cell, digit):
 def gridp_box_is_allowed(g, box, cell, digit):
 	return g[get_box_cell_coord(box, cell)] & (1<<digit)
 
+def gridp_print_num_allowed_or_space(g, gp, x, y):
+	allowed = gridp_num_allowed(gp, x, y)
+	if c(g, x, y) == 0:
+		return chr(allowed + ord('0'));
+
+	return " "
+
 # There are too many possibilities per square to print them all. Instead use this procedure to print a grid of the number of possibilities.
-def grid_print_num_allowed(g):
-	print chr(gridp_num_allowed(g, 0, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 0) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 0) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 0) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 0) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 1) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 1) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 1) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 1) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 2) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 2) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 2) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 2) + ord('0'))
+def grid_print_num_allowed(g, gp):
+	print gridp_print_num_allowed_or_space(g, gp, 0, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 0) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 0) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 0)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 1) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 1) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 1) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 1)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 2) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 2) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 2) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 2)
 	print "-----+-----+-----"
-	print chr(gridp_num_allowed(g, 0, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 3) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 3) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 3) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 3) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 4) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 4) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 4) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 4) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 5) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 5) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 5) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 5) + ord('0'))
+	print gridp_print_num_allowed_or_space(g, gp, 0, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 3) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 3) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 3) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 3)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 4) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 4) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 4) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 4)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 5) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 5) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 5) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 5)
 	print "-----+-----+-----"
-	print chr(gridp_num_allowed(g, 0, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 6) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 6) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 6) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 6) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 7) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 7) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 7) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 7) + ord('0'))
-	print chr(gridp_num_allowed(g, 0, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 1, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 2, 8) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 3, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 4, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 5, 8) + ord('0')) + \
-		 "|" + chr(gridp_num_allowed(g, 6, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 7, 8) + ord('0')) + " " + chr(gridp_num_allowed(g, 8, 8) + ord('0'))
+	print gridp_print_num_allowed_or_space(g, gp, 0, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 6) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 6) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 6) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 6)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 7) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 7) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 7) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 7)
+	print gridp_print_num_allowed_or_space(g, gp, 0, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 8) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 8) + \
+		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 8)
 
 # Set a number on a grid, updating the disallow bit on all appropriate cells.
 def grid_set(g, gp, x, y, digit):
@@ -186,6 +192,23 @@ def grid_set(g, gp, x, y, digit):
 	box = get_box(x, y)
 	for i in range(0, 9):
 		gridp_box_disallow(gp, box, i, digit)
+
+def get_possibilities(grid):
+	grid_possibilities = array.array('h',
+		[~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
+		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0])
+
+	for k in range(0, 9*9):
+		grid_set(grid, grid_possibilities, k%9, k/9, grid[k])
+
+	return grid_possibilities
 
 """
 In broad strokes:
@@ -285,8 +308,8 @@ for k in range(0, 9*9+1):
 	grid_set(grid, grid_possibilities, x, y, new)
 """
 
-grid_print(grid)
-grid_print_num_allowed(grid_possibilities)
+#grid_print(grid)
+#grid_print_num_allowed(grid_possibilities)
 
 
 """ Sako's notes from Sunday
@@ -328,4 +351,77 @@ def allow_all(grid g, int x, int y)
     for k in range(0, 9*9):
     	grid[k] = ~0
     	
-""""
+"""
+
+grid = array.array('b',
+	[0,0,1, 9,5,7, 0,6,3,
+	 0,0,0, 8,0,6, 0,7,0,
+	 7,6,9, 1,3,0, 8,0,5,
+
+	 0,0,7, 2,6,1, 3,5,0,
+	 3,1,2, 4,9,5, 7,8,6,
+	 0,5,6, 3,7,8, 0,0,0,
+
+	 1,0,8, 6,0,9, 5,0,7,
+	 0,9,0, 7,1,0, 6,0,8,
+	 6,7,4, 5,8,3, 0,0,0])
+
+grid_possibilities = get_possibilities(grid)
+
+grid_print(grid)
+grid_print_num_allowed(grid, grid_possibilities)
+
+# g should be a grid_possibilities array.
+# Returns a list of every cell that this number is allowed in.
+def gridp_get_allowed_cells_in_box_for_digit(g, gp, box, digit):
+	allowed = []
+	for cell in xrange(0, 9):
+		coord = get_box_cell_coord(box, cell);
+
+		if b(g, box, cell) > 0:
+			continue
+
+		if gridp_is_allowed(gp, coord%9, coord/9, digit):
+			allowed.append(cell)
+
+	return allowed
+
+def candidate_lines(grid, grid_p):
+	for box in xrange(0, 9):
+		for digit in xrange(1, 10):
+			allowed = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
+			#print "Digit: " + str(digit) + " (" + str(box) + ")"
+			if not len(allowed):
+				continue
+
+			x_mod = allowed[0]%3
+			y_mod = allowed[0]/3
+
+			#print str(x_mod) + " " + str(y_mod)
+			only_x = True
+			only_y = True
+			for k in xrange(1, len(allowed)-1):
+				#print str(allowed[k]%3) + " " + str(allowed[k]/3)
+				if allowed[k]%3 != x_mod:
+					only_x = False
+				if allowed[k]/3 != y_mod:
+					only_y = False
+
+			#print allowed
+			#print str(only_x) + " " + str(only_y)
+
+
+candidate_lines(grid, grid_possibilities)
+
+
+
+
+
+
+
+
+
+
+
+
+
