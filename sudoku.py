@@ -60,6 +60,13 @@ def get_box_cell_coord(box, cell):
 def b(grid, box, cell):
 	return grid[get_box_cell_coord(box, cell)]
 
+def grid_solved(grid):
+	for k in xrange(0, 9*9):
+		if grid[k] == 0:
+			return False
+
+	return True
+
 def pretty_print(c):
 	if c == 0:
 		return " "
@@ -389,6 +396,7 @@ grid_possibilities = get_possibilities(grid)
 # If in a certain box the only candidate cells are all in a line then
 # we can eliminate that number in that row in other boxes.
 def candidate_lines(grid, grid_p):
+	modified = False
 	for box in xrange(0, 9):
 		for digit in xrange(1, 10):
 			allowed = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
@@ -419,6 +427,7 @@ def candidate_lines(grid, grid_p):
 						continue
 
 					gridp_disallow(grid_p, column, row, digit)
+					modified = True
 
 			if only_y:
 				row = get_box_cell_coord(box, allowed[0])/9
@@ -428,53 +437,55 @@ def candidate_lines(grid, grid_p):
 						continue
 
 					gridp_disallow(grid_p, column, row, digit)
+					modified = True
 
-candidate_lines(grid, grid_possibilities)
-
-grid_print(grid)
-grid_print_num_allowed(grid, grid_possibilities)
-
-
-
-#grid_print(grid)
-#grid_print_num_allowed(grid, grid_possibilities)
-
-
+	return modified
 
 def Pips(g, gp):
-	#gp = get_possibilities(g)
+	modified = False
 	canPips=True
 	while(canPips):
 		canPips=False
 		for cell in range(0,81):
 			if c(g, cell%9, cell/9) == 0:
-				#print("dude")
 				n=gridp_get_allowed(gp,cell%9,cell/9)
-				#print cell
-				#print n
 				if len(n) == 1:
-					grid_print(grid)
-					#print cell
-					#print n
 					canPips=True
 					grid_set(g,gp,cell%9,cell/9,n[0])
-					print '\n'
+					modified = True
 					continue
 
+	return modified
+
 
 grid_print(grid)
 grid_print_num_allowed(grid, grid_possibilities)
 
-Pips(grid, grid_possibilities)
-grid_print(grid)
-grid_print_num_allowed(grid, grid_possibilities)
+def solve(grid, grid_possibilities):
+	# First do all the pips we can
+	Pips(grid, grid_possibilities)
+
+	modified = False
+
+	while True:
+		modified = False
+
+		modified |= candidate_lines(grid, grid_possibilities)
+		modified |= Pips(grid, grid_possibilities)
+
+		if not modified:
+			break
+
+	return grid_solved(grid)
 
 
 
+is_solved = solve(grid,grid_possibilities)
 
-robb_alive = True
-while robb_alive:
-	print "KING OF THE NORTH!"
-	frey_betrayal = (random.randint(0,100) == 50)
-	robb_alive = not frey_betrayal
+if is_solved:
+	print "SOLVED!"
+else:
+	print "NOT SOLVED!"
+
+
 
