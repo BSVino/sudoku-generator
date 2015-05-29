@@ -2,6 +2,7 @@
 
 import array
 import random
+import copy
 
 # The grid is a 9 by 9 char array.
 # 0 means there is no number.
@@ -19,7 +20,7 @@ grid = array.array('b',
 	 5,6,7,2,3,4,8,9,1])
 
 # Empty grid, start with anything possible.
-grid_possibilities = array.array('h',
+grid_pips = array.array('h',
 	[0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -74,6 +75,7 @@ def pretty_print(c):
 		return chr(c + ord('0'))
 
 def grid_print(g):
+	print "-----+-----+-----"
 	print pretty_print(c(g, 0, 0)) + " " + pretty_print(c(g, 1, 0)) + " " + pretty_print(c(g, 2, 0)) + \
 		 "|" + pretty_print(c(g, 3, 0)) + " " + pretty_print(c(g, 4, 0)) + " " + pretty_print(c(g, 5, 0)) + \
 		 "|" + pretty_print(c(g, 6, 0)) + " " + pretty_print(c(g, 7, 0)) + " " + pretty_print(c(g, 8, 0))
@@ -103,21 +105,22 @@ def grid_print(g):
 	print pretty_print(c(g, 0, 8)) + " " + pretty_print(c(g, 1, 8)) + " " + pretty_print(c(g, 2, 8)) + \
 		 "|" + pretty_print(c(g, 3, 8)) + " " + pretty_print(c(g, 4, 8)) + " " + pretty_print(c(g, 5, 8)) + \
 		 "|" + pretty_print(c(g, 6, 8)) + " " + pretty_print(c(g, 7, 8)) + " " + pretty_print(c(g, 8, 8))
+	print "-----+-----+-----"
 
-# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# g should be a grid_pips array. x and y are 9x9 cell coordinates.
 def gridp_allow(g, x, y, digit):
 	g[9*y + x] = g[9*y + x] | (1<<digit)
 
-# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# g should be a grid_pips array. x and y are 9x9 cell coordinates.
 def gridp_disallow(g, x, y, digit):
 	g[9*y + x] = g[9*y + x] & ~(1<<digit)
 
-# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# g should be a grid_pips array. x and y are 9x9 cell coordinates.
 def gridp_is_allowed(g, x, y, digit):
 	return g[9*y + x] & (1<<digit)
 
-# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
-# Returns the number of possibilities allowed for this cell.
+# g should be a grid_pips array. x and y are 9x9 cell coordinates.
+# Returns the number of pips allowed for this cell.
 def gridp_num_allowed(g, x, y):
 	allowed = 0
 	for k in range(1, 10):
@@ -125,7 +128,7 @@ def gridp_num_allowed(g, x, y):
 			allowed += 1
 	return allowed
 
-# g should be a grid_possibilities array. x and y are 9x9 cell coordinates.
+# g should be a grid_pips array. x and y are 9x9 cell coordinates.
 # Returns a list of every number allowed in this cell.
 def gridp_get_allowed(g, x, y):
 	allowed = []
@@ -134,17 +137,17 @@ def gridp_get_allowed(g, x, y):
 			allowed.append(k)
 	return allowed
 
-# g should be a grid_possibilities array.
+# g should be a grid_pips array.
 # box and cell are indexes from get_box and get_box_cell
 def gridp_box_allow(g, box, cell, digit):
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] | (1<<digit)
 
-# g should be a grid_possibilities array.
+# g should be a grid_pips array.
 # box and cell are indexes from get_box and get_box_cell
 def gridp_box_disallow(g, box, cell, digit):
 	g[get_box_cell_coord(box, cell)] = g[get_box_cell_coord(box, cell)] & ~(1<<digit)
 
-# g should be a grid_possibilities array.
+# g should be a grid_pips array.
 # box and cell are indexes from get_box and get_box_cell
 def gridp_box_is_allowed(g, box, cell, digit):
 	return g[get_box_cell_coord(box, cell)] & (1<<digit)
@@ -156,7 +159,7 @@ def gridp_print_num_allowed_or_space(g, gp, x, y):
 
 	return " "
 
-# g should be a grid_possibilities array.
+# g should be a grid_pips array.
 # Returns a list of every cell that this number is allowed in.
 def gridp_get_allowed_cells_in_box_for_digit(g, gp, box, digit):
 	allowed = []
@@ -171,8 +174,9 @@ def gridp_get_allowed_cells_in_box_for_digit(g, gp, box, digit):
 
 	return allowed
 
-# There are too many possibilities per square to print them all. Instead use this procedure to print a grid of the number of possibilities.
+# There are too many pips per square to print them all. Instead use this procedure to print a grid of the number of pips.
 def grid_print_num_allowed(g, gp):
+	print "-----+-----+-----"
 	print gridp_print_num_allowed_or_space(g, gp, 0, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 0) + \
 		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 0) + \
 		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 0) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 0)
@@ -202,6 +206,7 @@ def grid_print_num_allowed(g, gp):
 	print gridp_print_num_allowed_or_space(g, gp, 0, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 1, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 2, 8) + \
 		 "|" + gridp_print_num_allowed_or_space(g, gp, 3, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 4, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 5, 8) + \
 		 "|" + gridp_print_num_allowed_or_space(g, gp, 6, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 7, 8) + " " + gridp_print_num_allowed_or_space(g, gp, 8, 8)
+	print "-----+-----+-----"
 
 # Set a number on a grid, updating the disallow bit on all appropriate cells.
 def grid_set(g, gp, x, y, digit):
@@ -215,8 +220,8 @@ def grid_set(g, gp, x, y, digit):
 	for i in range(0, 9):
 		gridp_box_disallow(gp, box, i, digit)
 
-def get_possibilities(grid):
-	grid_possibilities = array.array('h',
+def get_pips(grid):
+	grid_pips = array.array('h',
 		[~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
 		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
 		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
@@ -228,9 +233,9 @@ def get_possibilities(grid):
 		 ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0])
 
 	for k in range(0, 9*9):
-		grid_set(grid, grid_possibilities, k%9, k/9, grid[k])
+		grid_set(grid, grid_pips, k%9, k/9, grid[k])
 
-	return grid_possibilities
+	return grid_pips
 
 """
 In broad strokes:
@@ -253,32 +258,33 @@ def col_swap(grid, k1, k2):
 	for k in range(0, 9):
 		grid[k1 + k*9], grid[k2 + k*9] = grid[k2 + k*9], grid[k1 + k*9]
 
-# First make 50 random row and column swaps to randomize the permutations
-for k in range(0, 50):
-	box = random.randint(0, 2)
-	row1 = random.randint(0, 2)
-	row2 = (row1+random.randint(1, 2))%3 + box*3
-	row1 += box*3
-	row_swap(grid, row1, row2)
+def randomize_grid(grid, grid_pips):
+	# First make 50 random row and column swaps to randomize the permutations
+	for k in range(0, 50):
+		box = random.randint(0, 2)
+		row1 = random.randint(0, 2)
+		row2 = (row1+random.randint(1, 2))%3 + box*3
+		row1 += box*3
+		row_swap(grid, row1, row2)
 
-	box = random.randint(0, 2)
-	col1 = random.randint(0, 2)
-	col2 = (col1+random.randint(1, 2))%3 + box*3
-	col1 += box*3
-	col_swap(grid, col1, col2)
+		box = random.randint(0, 2)
+		col1 = random.randint(0, 2)
+		col2 = (col1+random.randint(1, 2))%3 + box*3
+		col1 += box*3
+		col_swap(grid, col1, col2)
 
-digits = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-randomized = []
+	digits = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	randomized = []
 
-# Now create a random permutation for the digits and apply it
-while len(digits):
-	index = random.randint(0, len(digits)-1)
-	digit = digits.pop(index)
-	randomized.append(digit)
+	# Now create a random permutation for the digits and apply it
+	while len(digits):
+		index = random.randint(0, len(digits)-1)
+		digit = digits.pop(index)
+		randomized.append(digit)
 
-for k in range(0, 9*9):
-	grid[k] = randomized[grid[k]-1]
-	grid_possibilities[k] = 1<<grid[k]
+	for k in range(0, 9*9):
+		grid[k] = randomized[grid[k]-1]
+		grid_pips[k] = 1<<grid[k]
 
 # The next two strategies for generating grids don't work, they eventually hit
 # invalid grid positions.
@@ -290,7 +296,7 @@ for k in range(1, 10):
 		# Find the cells in this box that are free for this number
 		free_cells = []
 		for cell in range(0, 9):
-			if gridp_box_is_allowed(grid_possibilities, box, cell, k):
+			if gridp_box_is_allowed(grid_pips, box, cell, k):
 				if b(grid, box, cell) == 0:
 					free_cells.append(cell)
 
@@ -305,10 +311,10 @@ for k in range(1, 10):
 		x = index%9
 		y = index/9
 
-		grid_set(grid, grid_possibilities, x, y, k)
+		grid_set(grid, grid_pips, x, y, k)
 
 		grid_print(grid)
-		grid_print_num_allowed(grid_possibilities)
+		grid_print_num_allowed(grid_pips)
 """
 
 """
@@ -317,21 +323,21 @@ for k in range(0, 9*9+1):
 	y = k/9
 
 	print "Coordinate: " + str(x) + ", " + str(y)
-	allowed = gridp_get_allowed(grid_possibilities, x, y)
+	allowed = gridp_get_allowed(grid_pips, x, y)
 	print "Allowed: "
 	print allowed
 	if len(allowed) == 0:
 		grid_print(grid)
-		grid_print_num_allowed(grid_possibilities)
+		grid_print_num_allowed(grid_pips)
 	new = allowed[random.randint(0, len(allowed)-1)]
 	print "New: " + str(new)
 	print ""
 
-	grid_set(grid, grid_possibilities, x, y, new)
+	grid_set(grid, grid_pips, x, y, new)
 """
 
 #grid_print(grid)
-#grid_print_num_allowed(grid_possibilities)
+#grid_print_num_allowed(grid_pips)
 
 
 """ Sako's notes from Sunday
@@ -388,10 +394,10 @@ grid = array.array('b',
 	 0,9,0, 7,1,0, 6,0,8,
 	 6,7,4, 5,8,3, 0,0,0])
 
-grid_possibilities = get_possibilities(grid)
+grid_pips = get_pips(grid)
 
 #grid_print(grid)
-#grid_print_num_allowed(grid, grid_possibilities)
+#grid_print_num_allowed(grid, grid_pips)
 
 # If in a certain box the only candidate cells are all in a line then
 # we can eliminate that number in that row in other boxes.
@@ -414,7 +420,9 @@ def candidate_lines(grid, grid_p):
 				if allowed[k]/3 != y_mod:
 					only_y = False
 
-			assert not (only_x and only_y)
+			if only_x and only_y:
+				# In this case it's alone on a line
+				continue
 
 			if not only_x and not only_y:
 				continue
@@ -426,8 +434,9 @@ def candidate_lines(grid, grid_p):
 					if get_box(column, row) == box:
 						continue
 
-					gridp_disallow(grid_p, column, row, digit)
-					modified = True
+					if gridp_is_allowed(grid_p, column, row, digit):
+						gridp_disallow(grid_p, column, row, digit)
+						modified = True
 
 			if only_y:
 				row = get_box_cell_coord(box, allowed[0])/9
@@ -436,8 +445,9 @@ def candidate_lines(grid, grid_p):
 					if get_box(column, row) == box:
 						continue
 
-					gridp_disallow(grid_p, column, row, digit)
-					modified = True
+					if gridp_is_allowed(grid_p, column, row, digit):
+						gridp_disallow(grid_p, column, row, digit)
+						modified = True
 
 	return modified
 
@@ -455,37 +465,89 @@ def Pips(g, gp):
 					modified = True
 					continue
 
+	#print "Pips: " + str(modified)
 	return modified
 
-
-grid_print(grid)
-grid_print_num_allowed(grid, grid_possibilities)
-
-def solve(grid, grid_possibilities):
-	# First do all the pips we can
-	Pips(grid, grid_possibilities)
-
-	modified = False
-
+def solve(grid, grid_pips):
 	while True:
 		modified = False
 
-		modified |= candidate_lines(grid, grid_possibilities)
-		modified |= Pips(grid, grid_possibilities)
+		modified |= candidate_lines(grid, grid_pips)
+		modified |= Pips(grid, grid_pips)
 
 		if not modified:
 			break
+
+		if grid_solved(grid):
+			return True
 
 	return grid_solved(grid)
 
 
 
-is_solved = solve(grid,grid_possibilities)
+def generate_puzzle():
+	grid = array.array('b',
+		[1,2,3,7,8,9,4,5,6,
+		 4,5,6,1,2,3,7,8,9,
+		 7,8,9,4,5,6,1,2,3,
+		 9,1,2,6,7,8,3,4,5,
+		 3,4,5,9,1,2,6,7,8,
+		 6,7,8,3,4,5,9,1,2,
+		 8,9,1,5,6,7,2,3,4,
+		 2,3,4,8,9,1,5,6,7,
+		 5,6,7,2,3,4,8,9,1])
 
-if is_solved:
-	print "SOLVED!"
-else:
-	print "NOT SOLVED!"
+	grid_pips = array.array('h',
+		[0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+	randomize_grid(grid, grid_pips)
+
+	print "GRID:"
+	grid_print(grid)
+	#grid_print_num_allowed(grid, grid_pips)
+
+	last_solvable = copy.deepcopy(grid)
+
+	numbers_removed = 0
+	solvable = True
+	while solvable:
+		# Take out a number
+		while True:
+			remove_cell = random.randint(0, 9*9-1)
+			if grid[remove_cell] == 0:
+				continue
+
+			grid[remove_cell] = 0
+			break
+
+		numbers_removed += 1
+
+		puzzle = copy.deepcopy(grid)
+		puzzle_pips = get_pips(grid)
+
+		solvable = solve(puzzle, puzzle_pips)
+
+		if solvable:
+			last_solvable = copy.deepcopy(grid)
+
+	print str(9*9 - numbers_removed + 1) + " numbers remaining"
+	return last_solvable
+
+
+
+
+puzzle = generate_puzzle()
+
+print "PUZZLE:"
+grid_print(puzzle)
 
 
 
