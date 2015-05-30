@@ -648,7 +648,7 @@ def generate_puzzle(diff):
 
 #diff=0
 if len(sys.argv) != 2:
-	print "Wrong number of arguments given."
+	print "Wrong number of arguments given. One required: difficulty level"
 	sys.exit()
 diff = sys.argv[1]
 if diff!='easy' and diff!='medium' and diff != 'hard':
