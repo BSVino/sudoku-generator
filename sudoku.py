@@ -403,6 +403,8 @@ grid_pips = get_pips(grid)
 #grid_print(grid)
 #grid_print_num_allowed(grid, grid_pips)
 
+used_candidate_lines = False
+
 # If in a certain box the only candidate cells are all in a line then
 # we can eliminate that number in that row in other boxes.
 def candidate_lines(grid, grid_p):
@@ -456,9 +458,12 @@ def candidate_lines(grid, grid_p):
 						difficulty = difficulty+3
 						modified = True
 
-	#if modified:
-	#	print "Candidate Lines"
+	if modified:
+		used_candidate_lines = True
+
 	return modified
+
+used_double_pairs = False
 
 # If in a certain box the only candidate cells are all in two lines then
 # we can eliminate that number in other boxes along the same line.
@@ -542,8 +547,8 @@ def double_pairs(grid, grid_p):
 							gridp_box_disallow(grid_p, box*3+1, cell, digit)
 							modified = True
 
-	#if modified:
-	#	print "Double Pairs"
+	if modified:
+		used_double_pairs = True
 	return modified
 
 def Pips(g, gp):
@@ -562,8 +567,6 @@ def Pips(g, gp):
 					difficulty = difficulty + 1
 					continue
 
-	#if modified:
-	#	print "Pips"
 	return modified
 
 def solve(grid, grid_pips):
@@ -618,12 +621,6 @@ def generate_puzzle():
 	numbers_removed = 0
 	solvable = True
 	while solvable:
-		# Take out a number
-		if difficulty >= diff:
-			print difficulty
-			break
-		print difficulty
-		difficulty = 0
 		while True:
 			remove_cell = random.randint(0, 9*9-1)
 			if grid[remove_cell] == 0:
