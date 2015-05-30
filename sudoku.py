@@ -3,6 +3,10 @@
 import array
 import random
 import copy
+import sys
+
+
+difficulty = 0
 
 # The grid is a 9 by 9 char array.
 # 0 means there is no number.
@@ -403,6 +407,7 @@ grid_pips = get_pips(grid)
 # we can eliminate that number in that row in other boxes.
 def candidate_lines(grid, grid_p):
 	modified = False
+	global difficulty
 	for box in xrange(0, 9):
 		for digit in xrange(1, 10):
 			allowed = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
@@ -436,6 +441,7 @@ def candidate_lines(grid, grid_p):
 
 					if gridp_is_allowed(grid_p, column, row, digit):
 						gridp_disallow(grid_p, column, row, digit)
+						difficulty = difficulty+3
 						modified = True
 
 			if only_y:
@@ -447,6 +453,7 @@ def candidate_lines(grid, grid_p):
 
 					if gridp_is_allowed(grid_p, column, row, digit):
 						gridp_disallow(grid_p, column, row, digit)
+						difficulty = difficulty+3
 						modified = True
 
 	#if modified:
@@ -542,6 +549,7 @@ def double_pairs(grid, grid_p):
 def Pips(g, gp):
 	modified = False
 	canPips=True
+	global difficulty
 	while(canPips):
 		canPips=False
 		for cell in range(0,81):
@@ -551,6 +559,7 @@ def Pips(g, gp):
 					canPips=True
 					grid_set(g,gp,cell%9,cell/9,n[0])
 					modified = True
+					difficulty = difficulty + 1
 					continue
 
 	#if modified:
@@ -605,11 +614,16 @@ def generate_puzzle():
 	#grid_print_num_allowed(grid, grid_pips)
 
 	last_solvable = copy.deepcopy(grid)
-
+	global difficulty
 	numbers_removed = 0
 	solvable = True
 	while solvable:
 		# Take out a number
+		if difficulty >= diff:
+			print difficulty
+			break
+		print difficulty
+		difficulty = 0
 		while True:
 			remove_cell = random.randint(0, 9*9-1)
 			if grid[remove_cell] == 0:
@@ -631,8 +645,17 @@ def generate_puzzle():
 	print str(9*9 - numbers_removed + 1) + " numbers remaining"
 	return last_solvable
 
-
-
+"""
+diff=0
+if sys.argv[1]=='easy':
+	diff = 40
+elif sys.argv[1]=='medium':
+	diff = 60
+elif sys.argv[1]=='hard':
+	diff = 75
+else:
+	diff = 85
+"""
 
 puzzle = generate_puzzle()
 
