@@ -6,7 +6,6 @@ import copy
 import sys
 
 
-difficulty = 0
 
 # The grid is a 9 by 9 char array.
 # 0 means there is no number.
@@ -409,7 +408,7 @@ used_candidate_lines = False
 # we can eliminate that number in that row in other boxes.
 def candidate_lines(grid, grid_p):
 	modified = False
-	global difficulty
+	global used_candidate_lines
 	for box in xrange(0, 9):
 		for digit in xrange(1, 10):
 			allowed = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
@@ -443,7 +442,6 @@ def candidate_lines(grid, grid_p):
 
 					if gridp_is_allowed(grid_p, column, row, digit):
 						gridp_disallow(grid_p, column, row, digit)
-						difficulty = difficulty+3
 						modified = True
 
 			if only_y:
@@ -455,7 +453,6 @@ def candidate_lines(grid, grid_p):
 
 					if gridp_is_allowed(grid_p, column, row, digit):
 						gridp_disallow(grid_p, column, row, digit)
-						difficulty = difficulty+3
 						modified = True
 
 	if modified:
@@ -469,6 +466,7 @@ used_double_pairs = False
 # we can eliminate that number in other boxes along the same line.
 def double_pairs(grid, grid_p):
 	modified = False
+	global used_double_pairs
 	for box in xrange(0, 3):
 		for digit in xrange(1, 10):
 			allowed1 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
@@ -554,7 +552,6 @@ def double_pairs(grid, grid_p):
 def Pips(g, gp):
 	modified = False
 	canPips=True
-	global difficulty
 	while(canPips):
 		canPips=False
 		for cell in range(0,81):
@@ -564,18 +561,23 @@ def Pips(g, gp):
 					canPips=True
 					grid_set(g,gp,cell%9,cell/9,n[0])
 					modified = True
-					difficulty = difficulty + 1
 					continue
 
 	return modified
 
-def solve(grid, grid_pips):
+def solve(grid, grid_pips, diff):
 	while True:
 		modified = False
 
-		modified |= double_pairs(grid, grid_pips)
-		modified |= candidate_lines(grid, grid_pips)
-		modified |= Pips(grid, grid_pips)
+		if diff == 'hard':
+			modified |= double_pairs(grid, grid_pips)
+			modified |= candidate_lines(grid, grid_pips)
+			modified |= Pips(grid, grid_pips)
+		elif diff == 'medium':
+			modified |= candidate_lines(grid, grid_pips)
+			modified |= Pips(grid, grid_pips)
+		else:
+			modified |= Pips(grid, grid_pips)
 
 		if not modified:
 			break
@@ -587,7 +589,7 @@ def solve(grid, grid_pips):
 
 
 
-def generate_puzzle():
+def generate_puzzle(diff):
 	grid = array.array('b',
 		[1,2,3,7,8,9,4,5,6,
 		 4,5,6,1,2,3,7,8,9,
@@ -617,10 +619,11 @@ def generate_puzzle():
 	#grid_print_num_allowed(grid, grid_pips)
 
 	last_solvable = copy.deepcopy(grid)
-	global difficulty
+	#global diff
 	numbers_removed = 0
 	solvable = True
 	while solvable:
+
 		while True:
 			remove_cell = random.randint(0, 9*9-1)
 			if grid[remove_cell] == 0:
@@ -634,7 +637,7 @@ def generate_puzzle():
 		puzzle = copy.deepcopy(grid)
 		puzzle_pips = get_pips(grid)
 
-		solvable = solve(puzzle, puzzle_pips)
+		solvable = solve(puzzle, puzzle_pips,diff)
 
 		if solvable:
 			last_solvable = copy.deepcopy(grid)
@@ -642,19 +645,23 @@ def generate_puzzle():
 	print str(9*9 - numbers_removed + 1) + " numbers remaining"
 	return last_solvable
 
-"""
-diff=0
-if sys.argv[1]=='easy':
-	diff = 40
-elif sys.argv[1]=='medium':
-	diff = 60
-elif sys.argv[1]=='hard':
-	diff = 75
-else:
-	diff = 85
-"""
 
-puzzle = generate_puzzle()
+#diff=0
+diff = sys.argv[1]
+if diff!='easy' and diff!='medium' and diff != 'hard':
+	print "Wrong Difficulty input"
+	sys.exit()
+
+puzzle = generate_puzzle(diff)
+#print used_candidate_lines
+while not used_double_pairs and not used_candidate_lines and diff == 'hard':
+	used_double_pairs = False
+	used_candidate_lines = False
+	puzzle = generate_puzzle(diff)
+while not used_candidate_lines and diff == 'medium':
+	puzzle = generate_puzzle(diff)
+
+
 
 print "PUZZLE:"
 grid_print(puzzle)
