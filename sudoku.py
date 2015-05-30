@@ -449,6 +449,94 @@ def candidate_lines(grid, grid_p):
 						gridp_disallow(grid_p, column, row, digit)
 						modified = True
 
+	#if modified:
+	#	print "Candidate Lines"
+	return modified
+
+# If in a certain box the only candidate cells are all in two lines then
+# we can eliminate that number in other boxes along the same line.
+def double_pairs(grid, grid_p):
+	modified = False
+	for box in xrange(0, 3):
+		for digit in xrange(1, 10):
+			allowed1 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box, digit)
+			allowed2 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box+3, digit)
+			allowed3 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box+6, digit)
+
+			box1_columns = {0: 0, 1: 0, 2: 0}
+			box2_columns = {0: 0, 1: 0, 2: 0}
+			box3_columns = {0: 0, 1: 0, 2: 0}
+
+			for k in allowed1:
+				box1_columns[k%3] = 1
+
+			for k in allowed2:
+				box2_columns[k%3] = 1
+
+			for k in allowed3:
+				box3_columns[k%3] = 1
+
+			if cmp(box1_columns, box2_columns) == 0:
+				if box1_columns[0] + box1_columns[1] + box1_columns[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box+6, cell, digit):
+							gridp_box_disallow(grid_p, box+6, cell, digit)
+							modified = True
+
+			if cmp(box2_columns, box3_columns) == 0:
+				if box2_columns[0] + box2_columns[1] + box2_columns[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box, cell, digit):
+							gridp_box_disallow(grid_p, box, cell, digit)
+							modified = True
+
+			if cmp(box1_columns, box3_columns) == 0:
+				if box3_columns[0] + box3_columns[1] + box3_columns[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box+3, cell, digit):
+							gridp_box_disallow(grid_p, box+3, cell, digit)
+							modified = True
+
+			allowed1 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box*3, digit)
+			allowed2 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box*3+1, digit)
+			allowed3 = gridp_get_allowed_cells_in_box_for_digit(grid, grid_p, box*3+2, digit)
+
+			box1_rows = {0: 0, 1: 0, 2: 0}
+			box2_rows = {0: 0, 1: 0, 2: 0}
+			box3_rows = {0: 0, 1: 0, 2: 0}
+
+			for k in allowed1:
+				box1_rows[k%3] = 1
+
+			for k in allowed2:
+				box2_rows[k%3] = 1
+
+			for k in allowed3:
+				box3_rows[k%3] = 1
+
+			if cmp(box1_rows, box2_rows) == 0:
+				if box1_rows[0] + box1_rows[1] + box1_rows[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box*3+2, cell, digit):
+							gridp_box_disallow(grid_p, box*3+2, cell, digit)
+							modified = True
+
+			if cmp(box2_rows, box3_rows) == 0:
+				if box2_rows[0] + box2_rows[1] + box2_rows[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box*3, cell, digit):
+							gridp_box_disallow(grid_p, box*3, cell, digit)
+							modified = True
+
+			if cmp(box1_rows, box3_rows) == 0:
+				if box3_rows[0] + box3_rows[1] + box3_rows[2] == 2:
+					for cell in xrange(0, 9):
+						if gridp_box_is_allowed(grid_p, box*3+1, cell, digit):
+							gridp_box_disallow(grid_p, box*3+1, cell, digit)
+							modified = True
+
+	#if modified:
+	#	print "Double Pairs"
 	return modified
 
 def Pips(g, gp):
@@ -465,13 +553,15 @@ def Pips(g, gp):
 					modified = True
 					continue
 
-	#print "Pips: " + str(modified)
+	#if modified:
+	#	print "Pips"
 	return modified
 
 def solve(grid, grid_pips):
 	while True:
 		modified = False
 
+		modified |= double_pairs(grid, grid_pips)
 		modified |= candidate_lines(grid, grid_pips)
 		modified |= Pips(grid, grid_pips)
 
@@ -548,6 +638,4 @@ puzzle = generate_puzzle()
 
 print "PUZZLE:"
 grid_print(puzzle)
-
-
 
